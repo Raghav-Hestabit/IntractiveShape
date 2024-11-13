@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">InteractiveShape</string>
+    <string name="button_name">Create Shape</string>
+</resources>
