@@ -60,5 +60,5 @@ This project follows the **MVVM (Model-View-ViewModel)** architecture pattern, w
 
 ## Known Limitations
 
-- **Zooming Issues**: When the shape is zoomed out to the minimum scale, it becomes impossible to zoom in again. This is an issue with the pinch-to-zoom behavior when the scale reaches its minimum value.
+- **Zooming Issues**: When the shape is zoomed out to the minimum scale, it becomes more complicated to zoom in again. This is an issue with the pinch-to-zoom behavior when the scale reaches its minimum value.
 - **Scrolling Behavior**: When zoomed out to a small scale, the scrolling behavior of the shape changes unexpectedly, which might impact the user experience.
