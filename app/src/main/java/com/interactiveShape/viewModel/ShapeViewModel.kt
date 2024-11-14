@@ -9,11 +9,14 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.interactiveShape.data.DataItem
+import com.interactiveShape.data.GestureResult
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+import kotlin.math.cos
+import kotlin.math.sin
 import kotlin.random.Random
 
 @HiltViewModel
@@ -38,7 +41,7 @@ class ShapeViewModel @Inject constructor() : ViewModel() {
                     1f
                 )
             } while (_shapes.value.any { it!!.color == uniqueColor })
-            val shapeTypes = listOf(CircleShape, RectangleShape, RoundedCornerShape(18.dp),RoundedCornerShape(28.dp))
+            val shapeTypes = listOf(CircleShape, RectangleShape)
 
             val randomShapeType = shapeTypes.random()
 
@@ -57,6 +60,9 @@ class ShapeViewModel @Inject constructor() : ViewModel() {
             _shapes.value += newShape
         }
     }
+
+
+
 
     fun getNonNullShapeCount(): Int {
         val nonNullShapes = _shapes.value.filterNotNull()
@@ -86,6 +92,27 @@ class ShapeViewModel @Inject constructor() : ViewModel() {
                 )
             }
         }
+    }
+
+
+    fun handleGesture(
+        zoom: Float, rotationDelta: Float, pan: Offset, screenWidthPx: Float, screenHeightPx: Float,
+        shapeSizePx: Float, currentScale: Float, currentRotation: Float, currentOffset: Offset
+    ): GestureResult {
+        val newScale = (currentScale * zoom).coerceIn(0.5f, 2.0f)
+
+        val newRotation = (currentRotation + rotationDelta).let {
+            if (it < 0) it + 360 else it % 360
+        }
+
+        val angleRad = Math.toRadians(newRotation.toDouble())
+        val adjustedPanX = (pan.x * cos(angleRad) - pan.y * sin(angleRad)).toFloat()
+        val adjustedPanY = (pan.y * cos(angleRad) + pan.x * sin(angleRad)).toFloat()
+
+        val newX = (currentOffset.x + adjustedPanX).coerceIn(0f, screenWidthPx - shapeSizePx * newScale)
+        val newY = (currentOffset.y + adjustedPanY).coerceIn(0f, screenHeightPx - shapeSizePx * newScale)
+
+        return GestureResult(newScale, newRotation, Offset(newX, newY))
     }
 
 }
